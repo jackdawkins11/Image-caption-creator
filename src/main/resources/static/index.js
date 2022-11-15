@@ -6,30 +6,26 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-/*
- * image file + text == meme
- */
 function Meme(props) {
 	return React.createElement(
 		"div",
-		null,
-		React.createElement("img", { alt: "not found", width: "250px", src: URL.createObjectURL(props.meme.image) }),
-		React.createElement(
+		{ style: { display: "flex", flexDirection: "row", backgroundColor: props.idx % 2 == 0 ? "gainsboro" : "darkGrey" } },
+		props.meme.image && React.createElement("img", { alt: "not found", style: { height: "100px", width: "100px" }, src: URL.createObjectURL(props.meme.image) }),
+		!props.meme.image && React.createElement(
+			"label",
+			{ htmlFor: "input" + props.idx, style: { height: "100px", width: "100px" } },
+			"Choose file",
+			React.createElement("input", { type: "file", style: { display: "none" },
+				name: "myImage", id: "input" + props.idx, onChange: props.onInputChange })
+		),
+		props.idx == 0 && React.createElement("textarea", { placeholder: "Talk shit here...", value: props.meme.caption, onChange: props.onTextAreaChange,
+			onKeyUp: props.onTextAreaKeyUp,
+			style: { border: "none", outline: "none", resize: "none", flex: "auto", background: "transparent" } }),
+		props.idx != 0 && React.createElement(
 			"p",
 			null,
 			props.meme.caption
 		)
-	);
-}
-
-function UploadMeme(props) {
-	return React.createElement(
-		"div",
-		null,
-		props.memes[0].image && React.createElement("img", { alt: "not found", width: "250px", src: URL.createObjectURL(props.memes[0].image) }),
-		React.createElement("input", { type: "file", name: "myImage", onChange: props.onInputChange }),
-		React.createElement("textarea", { placeholder: "Talk shit here...", value: props.memes[0].caption, onChange: props.onTextAreaChange,
-			onKeyUp: props.onTextAreaKeyUp })
 	);
 }
 
@@ -47,9 +43,8 @@ var UploadAndDisplayImages = function (_React$Component) {
 
 	_createClass(UploadAndDisplayImages, [{
 		key: "onTextAreaKeyUp",
-		value: function onTextAreaKeyUp(e) {
-			console.log(e.keyCode);
-			if (e.keyCode == 13) {
+		value: function onTextAreaKeyUp(e, idx) {
+			if (idx == 0 && e.keyCode == 13) {
 				var memes = [{ image: null, caption: '' }].concat(this.state.memes);
 				this.setState({ memes: memes });
 				return;
@@ -57,34 +52,38 @@ var UploadAndDisplayImages = function (_React$Component) {
 		}
 	}, {
 		key: "onTextAreaChange",
-		value: function onTextAreaChange(e) {
+		value: function onTextAreaChange(e, idx) {
 			var memes = this.state.memes.slice();
-			memes[0] = { image: memes[0].image, caption: e.target.value };
+			memes[idx] = { image: memes[idx].image, caption: e.target.value };
 			this.setState({ memes: memes });
 		}
 	}, {
 		key: "onInputChange",
-		value: function onInputChange(e) {
+		value: function onInputChange(e, idx) {
 			var memes = this.state.memes.slice();
-			memes[0] = { image: e.target.files[0], caption: memes[0].caption };
+			memes[idx] = { image: e.target.files[0], caption: memes[idx].caption };
 			this.setState({ memes: memes });
 		}
 	}, {
 		key: "render",
 		value: function render() {
+			var _this2 = this;
+
 			console.log(this.state);
 			return React.createElement(
 				"div",
-				null,
-				React.createElement(
-					"h1",
-					null,
-					"Upload and Display Image usign React Hooks"
-				),
-				React.createElement(UploadMeme, { onTextAreaChange: this.onTextAreaChange.bind(this), onInputChange: this.onInputChange.bind(this),
-					memes: this.state.memes, onTextAreaKeyUp: this.onTextAreaKeyUp.bind(this) }),
-				this.state.memes.slice(1).map(function (meme, idx) {
-					return React.createElement(Meme, { meme: meme, key: idx });
+				{ style: { display: "flex", flexDirection: "column", alignItems: "stretch" } },
+				this.state.memes.map(function (meme, idx) {
+					return React.createElement(Meme, { meme: meme, key: idx, idx: idx,
+						onInputChange: function onInputChange(e) {
+							_this2.onInputChange(e, idx);
+						},
+						onTextAreaChange: function onTextAreaChange(e) {
+							_this2.onTextAreaChange(e, idx);
+						},
+						onTextAreaKeyUp: function onTextAreaKeyUp(e) {
+							_this2.onTextAreaKeyUp(e, idx);
+						} });
 				})
 			);
 		}
