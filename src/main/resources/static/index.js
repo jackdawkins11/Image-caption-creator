@@ -464,7 +464,7 @@ var UploadAndDisplayImages = function (_React$Component2) {
               _this6.onTextAreaKeyUp(e);
             } }),
           this.state.memes.map(function (meme, idx) {
-            return React.createElement(Meme, { image: "/" + meme.id, caption: meme.caption, key: idx, idx: idx });
+            return React.createElement(Meme, { image: "/uploads/" + meme.id, caption: meme.caption, key: idx, idx: idx });
           })
         )
       );

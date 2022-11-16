@@ -47,10 +47,15 @@ class MyController{
 		Meme meme = new Meme();
 		meme.setCaption( caption );
 		meme = memeRepo.save( meme );
-		String fileName = String.valueOf( meme.getId() );
 		try {
 			Files.copy(file.getInputStream(),
-					(Path)Paths.get("src", "main", "resources", "static", fileName ), StandardCopyOption.REPLACE_EXISTING );
+(Path)Paths.get("src", "main", "resources", "static", "uploads", String.valueOf( meme.getId() )), StandardCopyOption.REPLACE_EXISTING );
+
+			if( memeRepo.count() > 5 ){
+				Meme deleteMeme = memeRepo.findFirstByOrderByIdAsc();
+				Files.deleteIfExists(
+						(Path)Paths.get("src", "main", "resources", "static", "uploads", String.valueOf( deleteMeme.getId() ) ) );
+			}
 		} catch (Exception e) {
 			throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
 		}
@@ -77,4 +82,5 @@ class Meme{
 
 interface MemeRepo extends JpaRepository<Meme,Long> {
 	List<Meme> findFirst5ByOrderByIdDesc();
+	Meme findFirstByOrderByIdAsc();
 }

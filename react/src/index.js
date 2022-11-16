@@ -331,7 +331,7 @@ class UploadAndDisplayImages extends React.Component {
 				onTextAreaChange={ (e) => { this.onTextAreaChange( e ) } }
 				onTextAreaKeyUp={ (e) => { this.onTextAreaKeyUp( e ) } } />
 			{this.state.memes.map( (meme, idx) => {
-				return <Meme image={"/" + meme.id} caption={meme.caption} key={idx} idx={idx} />
+				return <Meme image={"/uploads/" + meme.id} caption={meme.caption} key={idx} idx={idx} />
 			})}
 			</div>
 			</div>
